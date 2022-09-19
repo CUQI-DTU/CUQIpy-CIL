@@ -11,6 +11,9 @@ jobs:
   build-n-test:
     name: Build and test (${{ matrix.python-version }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
     strategy:
       fail-fast: false
       matrix:
@@ -27,8 +30,8 @@ jobs:
           conda install -c conda-forge -c intel -c ccpi cil
       - name: Install pip dependencies
         run: |
-          pip3 install -r requirements.txt
-          pip3 install -r requirements-dev.txt
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
