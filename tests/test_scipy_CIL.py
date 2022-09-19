@@ -18,3 +18,11 @@ def test_CIL():
     acquisition_geometry = AcquisitionGeometry.create_Parallel2D()
     acquisition_geometry.set_angles(angles, angle_unit="radian")
     acquisition_geometry.set_panel(det_count, pixel_size=det_spacing)
+
+    # Setup image geometry
+    image_geometry = ImageGeometry(
+        voxel_num_x=im_size[0],
+        voxel_num_y=im_size[1],
+        voxel_size_x=domain[0] / im_size[0],
+        voxel_size_y=domain[1] / im_size[1],
+    )
