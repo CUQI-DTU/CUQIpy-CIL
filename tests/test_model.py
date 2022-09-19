@@ -12,13 +12,16 @@ def test_model_simple(model: cuqipy_cil.model.CILModel):
     # Test that the model at least computes a forward projection.
 
     # Simple test input
-    x = np.zeros(model.domain_dim)
+    x = np.zeros(model.domain_geometry.fun_shape)
 
     # Compute forward projection
+    x_container = model.image_geometry.allocate()
+    x_container.fill(x)
+    y = model.ProjectionOperator.direct(x_container)
     #y = model.forward(x)
 
     # Check that the output is the correct shape
-    #assert y.shape == (model.range_dim,)
+    assert y.as_array().ravel().shape == (model.range_dim,)
 
     # Compute backprojection
     #x2 = model.adjoint(y)
