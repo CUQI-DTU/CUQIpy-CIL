@@ -1,17 +1,13 @@
-from scipy.fftpack import dst, idst
+from scipy.fftpack import dst, idst # Import should work
 import numpy as np
 
 from cil.plugins.tigre import ProjectionOperator
-from cil.framework import ImageGeometry, AcquisitionGeometry, DataContainer
-
-def test_dst():
-    x = np.random.rand(10)
-    y = dst(x)
+from cil.framework import ImageGeometry, AcquisitionGeometry
 
 def test_CIL():
     im_size = (45,45)
     det_count = 50
-    angles = np.linspace(0,np.pi,60),
+    angles = np.linspace(0, np.pi, 60)
     domain = im_size
     det_spacing = 1
 
@@ -26,3 +22,14 @@ def test_CIL():
         voxel_size_x=domain[0] / im_size[0],
         voxel_size_y=domain[1] / im_size[1],
     )
+
+    # Projection operator
+    projection_operator = ProjectionOperator(image_geometry, acquisition_geometry)
+        
+    # Allocate data containers for efficiency
+    acquisition_data = acquisition_geometry.allocate()
+    image_data = image_geometry.allocate()
+
+    # Forward projection
+    image_data.fill(np.zeros(im_size))
+    #projection_operator.direct(image_data, out=acquisition_data)
