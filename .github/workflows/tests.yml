@@ -41,4 +41,4 @@ jobs:
       - name: Test with pytest
         run: |
           conda activate test
-          python -m pytest -v
+          pytest -v
