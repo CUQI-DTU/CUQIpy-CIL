@@ -126,7 +126,9 @@ class ParallelBeam2DProblem(cuqi.problem.BayesianProblem):
         if noise_type.lower() == "gaussian":
             data_dist = cuqi.distribution.GaussianCov(model(prior), noise_std**2, geometry = model.range_geometry, name="y")
         elif noise_type.lower() == "scaledgaussian":
-            data_dist = cuqi.distribution.GaussianCov(model(prior), b_exact*(noise_std**2), geometry = model.range_geometry, name="y")
+            if data is None:
+                raise ValueError("Scaled Gaussian noise requires data to be defined.")
+            data_dist = cuqi.distribution.GaussianCov(model(prior), data*(noise_std**2), geometry = model.range_geometry, name="y")
         else:
             raise NotImplementedError("This noise type is not implemented")
         
