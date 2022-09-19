@@ -1,0 +1,2 @@
+cuqipy
+cil # Must be installed from conda
