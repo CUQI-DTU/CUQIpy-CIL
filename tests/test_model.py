@@ -2,6 +2,7 @@
 import pytest
 import numpy as np
 import cuqi
+from scipy.fftpack import dst, idst
 
 def test_cuqi():
     TP = cuqi.testproblem.Deconvolution1D()
