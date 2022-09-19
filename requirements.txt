@@ -1,0 +1,2 @@
+# Install through conda CIL: https://github.com/TomographicImaging/CIL, then
+cuqipy

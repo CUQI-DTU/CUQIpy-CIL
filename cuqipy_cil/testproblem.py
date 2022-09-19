@@ -103,14 +103,14 @@ class ParallelBeam2DProblem(cuqi.problem.BayesianProblem):
                       
         # Get exact phantom
         if isinstance(phantom, np.ndarray):
-            if phantom.shape != model.domain_geometry.shape:
-                raise ValueError("Phantom shape does not match model domain geometry.")
+            if phantom.shape != model.domain_geometry.fun_shape:
+                raise ValueError(f"Phantom shape does not match model domain geometry image shape {model.domain_geometry.fun_shape}.")
             x_exact = phantom
         elif isinstance(phantom, str):
             # lowercase and replace hyphens with underscores to match library method names
             phantom = phantom.lower().replace("-", "_") 
             if hasattr(cuqi.data, phantom):
-                x_exact = getattr(cuqi.data, phantom)(size=model.domain_geometry.shape[0])
+                x_exact = getattr(cuqi.data, phantom)(size=model.domain_geometry.fun_shape[0])
             else:
                 raise ValueError("Phantom not found in cuqi.data phantom library.")
         else:
@@ -118,11 +118,17 @@ class ParallelBeam2DProblem(cuqi.problem.BayesianProblem):
         
         x_exact = cuqi.samples.CUQIarray(x_exact, is_par=False, geometry=model.domain_geometry)
 
+        # Define prior
+        if prior is None:
+            prior = cuqi.distribution.GaussianCov(np.zeros(model.domain_dim), 1, geometry = model.domain_geometry, name="x")
+
         # Define and add noise #TODO: Add Poisson and logpoisson
         if noise_type.lower() == "gaussian":
-            data_dist = cuqi.distribution.GaussianCov(model, noise_std**2, geometry = model.range_geometry)
+            data_dist = cuqi.distribution.GaussianCov(model(prior), noise_std**2, geometry = model.range_geometry, name="y")
         elif noise_type.lower() == "scaledgaussian":
-            data_dist = cuqi.distribution.GaussianCov(model, b_exact*(noise_std**2), geometry = model.range_geometry)
+            if data is None:
+                raise ValueError("Scaled Gaussian noise requires data to be defined.")
+            data_dist = cuqi.distribution.GaussianCov(model(prior), data*(noise_std**2), geometry = model.range_geometry, name="y")
         else:
             raise NotImplementedError("This noise type is not implemented")
         

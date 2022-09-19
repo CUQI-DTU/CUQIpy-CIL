@@ -1,7 +1,4 @@
 # %%
-import sys
-sys.path.append("../../cuqipy/") 
-sys.path.append("..")
 import numpy as np
 from cuqi.distribution import Cauchy_diff
 from cuqipy_cil.testproblem import ParallelBeam2DProblem
