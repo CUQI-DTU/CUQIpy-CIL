@@ -31,7 +31,7 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Install conda dependencies
         run: |
-          conda install -c conda-forge -c intel -c ccpi cil=22.1.0 tigre
+          conda install -c conda-forge -c intel -c astra-toolbox -c ccpi cil=22.1.0 astra-toolbox tigre ccpi-regulariser tomophantom
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
