@@ -3,6 +3,7 @@ import pytest
 import cuqi
 import numpy as np
 import sys
+import matplotlib.pyplot as plt
 
 @pytest.mark.skipif(sys.platform == "linux", reason="Currently fails on miniconda linux image due to some issue with tigre!")
 def test_testproblem_simple():
@@ -68,3 +69,30 @@ def test_testproblem_set_prior():
 
     # Plot sample mean and ci
     samples.plot_ci()
+
+@pytest.mark.skipif(sys.platform == "linux", reason="Currently fails on miniconda linux image due to some issue with tigre!")
+def test_testproblem_from_readme():
+
+    # Load a CT forward model and data from testproblem library
+    A, y_data, info = cuqipy_cil.testproblem.ParallelBeam2DProblem.get_components(
+        im_size=(128, 128),
+        det_count=128,
+        angles=np.linspace(0, np.pi, 180),
+        phantom="shepp-logan"
+    )
+
+    # Set up Bayesian model
+    x = cuqi.distribution.GaussianCov(np.zeros(A.domain_dim), 1) # x ~ N(0, 1)
+    y = cuqi.distribution.GaussianCov(A@x, 0.05**2)              # y ~ N(Ax, 0.05^2)
+
+    # Set up Bayesian Problem
+    BP = cuqi.problem.BayesianProblem(y, x).set_data(y=y_data)
+
+    # Sample from the posterior
+    samples = BP.sample_posterior(200)
+
+    # Analyze the samples
+    info.exactSolution.plot(); plt.title("Exact solution")
+    y_data.plot(); plt.title("Data")
+    samples.plot_mean(); plt.title("Posterior mean")
+    samples.plot_std(); plt.title("Posterior standard deviation")
