@@ -9,7 +9,7 @@ def test_dst():
     y = dst(x)
 
 def test_CIL():
-    im_size = (45,45),
+    im_size = (45,45)
     det_count = 50
     angles = np.linspace(0,np.pi,60),
     domain = im_size
