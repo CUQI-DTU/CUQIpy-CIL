@@ -1,29 +1,33 @@
-import cuqipy_cil
+#import cuqipy_cil
 import pytest
 import numpy as np
+import cuqi
 
-@pytest.mark.parametrize("model",
-    [
-        (cuqipy_cil.model.ParallelBeam2DModel()),
-        (cuqipy_cil.model.FanBeam2DModel()),
-        (cuqipy_cil.model.ShiftedFanBeam2DModel())
-    ])
-def test_model_simple(model: cuqipy_cil.model.CILModel):
-    # Test that the model at least computes a forward projection.
+def test_cuqi():
+    TP = cuqi.testproblem.Deconvolution1D()
 
-    # Simple test input
-    x = np.zeros(model.domain_dim)
+# @pytest.mark.parametrize("model",
+#     [
+#         (cuqipy_cil.model.ParallelBeam2DModel()),
+#         (cuqipy_cil.model.FanBeam2DModel()),
+#         (cuqipy_cil.model.ShiftedFanBeam2DModel())
+#     ])
+# def test_model_simple(model: cuqipy_cil.model.CILModel):
+#     # Test that the model at least computes a forward projection.
 
-    # Compute forward projection
-    y = model.forward(x)
+#     # Simple test input
+#     x = np.zeros(model.domain_dim)
 
-    # Check that the output is the correct shape
-    assert y.shape == (model.range_dim,)
+#     # Compute forward projection
+#     y = model.forward(x)
 
-    # Compute backprojection
-    x2 = model.adjoint(y)
+#     # Check that the output is the correct shape
+#     assert y.shape == (model.range_dim,)
 
-    # Check that the output is the correct shape
-    assert x2.shape == (model.domain_dim,)
+#     # Compute backprojection
+#     x2 = model.adjoint(y)
+
+#     # Check that the output is the correct shape
+#     assert x2.shape == (model.domain_dim,)
 
 
