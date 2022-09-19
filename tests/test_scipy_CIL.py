@@ -32,4 +32,4 @@ def test_CIL():
 
     # Forward projection
     image_data.fill(np.zeros(im_size))
-    #projection_operator.direct(image_data, out=acquisition_data)
+    projection_operator.direct(image_data, out=acquisition_data)
