@@ -2,7 +2,9 @@ import cuqipy_cil
 import pytest
 import cuqi
 import numpy as np
+import sys
 
+@pytest.mark.skipif(sys.platform == "linux", reason="Currently fails on miniconda linux image due to some issue with tigre!")
 def test_testproblem_simple():
     # Create simple testproblem
     TP = cuqipy_cil.testproblem.ParallelBeam2DProblem()
@@ -25,6 +27,7 @@ def test_testproblem_simple():
     # Check that the output is the correct shape
     assert MAP.shape == (TP.model.domain_dim,)
 
+@pytest.mark.skipif(sys.platform == "linux", reason="Currently fails on miniconda linux image due to some issue with tigre!")
 @pytest.mark.parametrize("phantom",
     [
         (cuqi.data.shepp_logan(size=128)),
@@ -43,6 +46,7 @@ def test_testproblem_phantom(phantom):
 
     assert np.allclose(TP.exactSolution, cuqi.data.imresize(phantom, TP.model.domain_geometry.fun_shape))
 
+@pytest.mark.skipif(sys.platform == "linux", reason="Currently fails on miniconda linux image due to some issue with tigre!")
 def test_testproblem_set_prior():
     """ Test if one can set a prior after creating a testproblem """
     TP = cuqipy_cil.testproblem.ParallelBeam2DProblem(
