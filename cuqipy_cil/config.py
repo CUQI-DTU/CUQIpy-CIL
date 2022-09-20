@@ -1,4 +1,4 @@
-""" This module controls global configuration settings for cuqipy_cil. """
+""" This module controls global configuration settings for the package. """
 import subprocess as _subprocess
 
 # Try detecting GPU
