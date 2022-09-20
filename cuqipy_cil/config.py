@@ -8,8 +8,26 @@ try:
 except:
     _detected_device = "cpu"
 
-PROJECTION_BACKEND = "astra"
-""" Projection backend to use. Currently supported: "tigre", "astra" """
+# Try detecting projector backend
+_detected_backend = None
+
+try:
+    import astra
+    _detected_backend = "astra"
+except ImportError:
+    pass
+
+try:
+    import tigre
+    _detected_backend = "tigre"
+except ImportError:
+    pass
+
+if _detected_backend is None:
+    raise ImportError("No projector backend found. Please install either astra or tigre.")
+
+PROJECTION_BACKEND = _detected_backend
+""" Projection backend to use. Currently supported: "tigre", "astra". Defaults to tigre if present, otherwise astra. """
 
 PROJECTION_BACKEND_DEVICE = _detected_device
-""" Device to use for projection backend. Currently supported: "cpu", "gpu". Only relevant for astra backend. """
+""" Device to use for projection backend. Currently supported: "cpu", "gpu". Defaults to GPU if present, otherwise cpu. Only relevant for astra backend. """
