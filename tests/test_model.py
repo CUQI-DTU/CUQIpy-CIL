@@ -3,7 +3,6 @@ import pytest
 import numpy as np
 import sys
 
-@pytest.mark.skipif(sys.platform == "linux", reason="Currently fails on miniconda linux image due to some issue with tigre!")
 @pytest.mark.parametrize("model",
     [
         (cuqipy_cil.model.ParallelBeam2DModel()),
