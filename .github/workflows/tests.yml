@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install conda dependencies
         run: | # Have to pin scipy to < 1.8.0 due to bug in CIL it seems.
-          conda install -c conda-forge -c intel -c ccpi cil tigre scipy=1.7.3
+          conda install -c conda-forge -c intel -c astra-toolbox -c ccpi cil astra
       - name: Install pip dependencies
         run: |
           pip install -r requirements.txt
