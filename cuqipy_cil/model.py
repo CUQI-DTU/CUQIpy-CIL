@@ -2,14 +2,13 @@ import numpy as np
 import cuqi
 import cuqipy_cil
 from cil.framework import ImageGeometry, AcquisitionGeometry, DataContainer
+import subprocess # To check for CUDA
 
-# Try importing astra projector (and check for CUDA)
+# Try importing astra projector
 try:
     from cil.plugins.astra import ProjectionOperator as ProjectionOperatorAstra
-    import astra # To check for CUDA
 except ImportError:
     ProjectionOperatorAstra = None
-    astra = None
 
 # Try importing tigre projector
 try:
@@ -59,11 +58,6 @@ class CILModel(cuqi.model.LinearModel):
             # If None module is not available
             if ProjectionOperatorAstra is None:
                 raise ImportError("Unable to load astra package needed by cil projector! Did you install cil with astra support?")
-
-            # If no CUDA available, switch to CPU
-            if not astra.use_cuda() and cuqipy_cil.config.PROJECTION_BACKEND_DEVICE == "gpu":
-                print("No CUDA support detected by astra, falling back to CPU projector!")
-                cuqipy_cil.config.PROJECTION_BACKEND_DEVICE = "cpu"
 
             self._ProjectionOperator = ProjectionOperatorAstra(image_geometry, acquisition_geometry, device=cuqipy_cil.config.PROJECTION_BACKEND_DEVICE)
         
