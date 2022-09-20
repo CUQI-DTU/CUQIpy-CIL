@@ -23,8 +23,9 @@ BP = cuqi.problem.BayesianProblem(y, x).set_data(y=y_data)
 samples = BP.sample_posterior(200)
 
 # Analyze the samples
-info.exactSolution.plot(); plt.title("Exact solution")
-y_data.plot(); plt.title("Data")
-samples.plot_mean(); plt.title("Posterior mean")
-samples.plot_std(); plt.title("Posterior standard deviation")
+info.exactSolution.plot(); plt.title("Exact solution"); plt.show()
+y_data.plot(); plt.title("Data"); plt.show()
+samples.plot_mean(); plt.title("Posterior mean"); plt.show()
+samples.plot_std(); plt.title("Posterior standard deviation"); plt.show()
+
 # %%

@@ -1,7 +1,20 @@
 import numpy as np
 import cuqi
-from cil.plugins.tigre import ProjectionOperator
+import cuqipy_cil
 from cil.framework import ImageGeometry, AcquisitionGeometry, DataContainer
+import subprocess # To check for CUDA
+
+# Try importing astra projector
+try:
+    from cil.plugins.astra import ProjectionOperator as ProjectionOperatorAstra
+except ImportError:
+    ProjectionOperatorAstra = None
+
+# Try importing tigre projector
+try:
+    from cil.plugins.tigre import ProjectionOperator as ProjectionOperatorTigre
+except ImportError:
+    ProjectionOperatorTigre = None
 
 class CILModel(cuqi.model.LinearModel):
     """ Base class of cuqi model using CIL for CT projectors.
@@ -39,8 +52,26 @@ class CILModel(cuqi.model.LinearModel):
         domain_geometry = cuqi.geometry.Image2D(image_geometry.shape)
         super().__init__(self._forward_func, self._adjoint_func, domain_geometry=domain_geometry, range_geometry=range_geometry)
 
-        # Create projection operator using Tigre.
-        self._ProjectionOperator = ProjectionOperator(image_geometry, acquisition_geometry)
+        # Create projection operator depending on the backend
+        if cuqipy_cil.config.PROJECTION_BACKEND == "astra":
+
+            # If None module is not available
+            if ProjectionOperatorAstra is None:
+                raise ImportError("Unable to load astra package needed by cil projector! Did you install cil with astra support?")
+
+            self._ProjectionOperator = ProjectionOperatorAstra(image_geometry, acquisition_geometry, device=cuqipy_cil.config.PROJECTION_BACKEND_DEVICE)
+        
+        elif cuqipy_cil.config.PROJECTION_BACKEND == "tigre":
+            
+            # If None module is not available
+            if ProjectionOperatorTigre is None:
+                raise ImportError("Unable to load tigre package needed by cil projector! Did you install cil with tigre support?")
+
+            # If CPU is requested throw error
+            if cuqipy_cil.config.PROJECTION_BACKEND_DEVICE == "cpu":
+                raise NotImplementedError("Tigre CPU projector not implemented yet! Try using astra backend instead.")
+
+            self._ProjectionOperator = ProjectionOperatorTigre(image_geometry, acquisition_geometry) # no device option for tigre
         
         # Allocate data containers for efficiency
         self._acquisition_data = acquisition_geometry.allocate()
@@ -267,5 +298,4 @@ class ShiftedFanBeam2DModel(CILModel):
             voxel_size_y=domain[1] / im_size[1],
         )
 
-        super().__init__(acquisition_geometry, image_geometry) 
-
+        super().__init__(acquisition_geometry, image_geometry)
