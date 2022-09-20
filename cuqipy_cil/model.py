@@ -1,7 +1,20 @@
+from tkinter import E
 import numpy as np
 import cuqi
-from cil.plugins.tigre import ProjectionOperator
+import cuqipy_cil
 from cil.framework import ImageGeometry, AcquisitionGeometry, DataContainer
+
+# Try importing astra projector
+try:
+    from cil.plugins.astra import ProjectionOperator as ProjectionOperatorAstra
+except ImportError:
+    ProjectionOperatorAstra = None
+
+# Try importing tigre projector
+try:
+    from cil.plugins.tigre import ProjectionOperator as ProjectionOperatorTigre
+except ImportError:
+    ProjectionOperatorTigre = None
 
 class CILModel(cuqi.model.LinearModel):
     """ Base class of cuqi model using CIL for CT projectors.
@@ -39,8 +52,16 @@ class CILModel(cuqi.model.LinearModel):
         domain_geometry = cuqi.geometry.Image2D(image_geometry.shape)
         super().__init__(self._forward_func, self._adjoint_func, domain_geometry=domain_geometry, range_geometry=range_geometry)
 
-        # Create projection operator using Tigre.
-        self._ProjectionOperator = ProjectionOperator(image_geometry, acquisition_geometry)
+        # Create projection operator depending on the backend
+        if cuqipy_cil.config.PROJECTION_BACKEND == "astra":
+            if ProjectionOperatorAstra is None:
+                raise ImportError("Unable to load astra package needed by cil projector! Did you install cil with astra support?")
+            self._ProjectionOperator = ProjectionOperatorAstra(image_geometry, acquisition_geometry, device=cuqipy_cil.config.PROJECTION_BACKEND_DEVICE)
+        
+        elif cuqipy_cil.config.PROJECTION_BACKEND == "tigre":
+            if ProjectionOperatorTigre is None:
+                raise ImportError("Unable to load tigre package needed by cil projector! Did you install cil with tigre support?")
+            self._ProjectionOperator = ProjectionOperatorTigre(image_geometry, acquisition_geometry) # no device option for tigre
         
         # Allocate data containers for efficiency
         self._acquisition_data = acquisition_geometry.allocate()
@@ -267,5 +288,26 @@ class ShiftedFanBeam2DModel(CILModel):
             voxel_size_y=domain[1] / im_size[1],
         )
 
-        super().__init__(acquisition_geometry, image_geometry) 
+        super().__init__(acquisition_geometry, image_geometry)
 
+
+# ======= RESOLVE BACKEND AND DEVICE ========
+def _test_forward():
+    model = ParallelBeam2DModel()
+    x = np.zeros(model.domain_geometry.par_dim)
+    y = model.forward(x)
+
+# Attempt a forward projection to check if modules and GPU are available
+try:
+    _test_forward()
+    print(f"Setting up CIL with backend={cuqipy_cil.config.PROJECTION_BACKEND} and device={cuqipy_cil.config.PROJECTION_BACKEND_DEVICE}")
+except Exception as e:
+    if cuqipy_cil.config.PROJECTION_BACKEND == "tigre":
+        cuqipy_cil.config.PROJECTION_BACKEND = "astra"
+    try:
+        _test_forward()
+        print(f"Setting up CIL with backend={cuqipy_cil.config.PROJECTION_BACKEND} and device={cuqipy_cil.config.PROJECTION_BACKEND_DEVICE}")
+    except Exception as e:
+        cuqipy_cil.config.PROJECTION_BACKEND_DEVICE = "cpu"
+        _test_forward()
+        print(f"Setting up CIL with backend={cuqipy_cil.config.PROJECTION_BACKEND} and device={cuqipy_cil.config.PROJECTION_BACKEND_DEVICE}")

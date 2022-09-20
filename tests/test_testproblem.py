@@ -2,10 +2,8 @@ import cuqipy_cil
 import pytest
 import cuqi
 import numpy as np
-import sys
 import matplotlib.pyplot as plt
 
-@pytest.mark.skipif(sys.platform == "linux", reason="Currently fails on miniconda linux image due to some issue with tigre!")
 def test_testproblem_simple():
     # Create simple testproblem
     TP = cuqipy_cil.testproblem.ParallelBeam2DProblem()
@@ -17,10 +15,10 @@ def test_testproblem_simple():
     assert TP.model.range_dim == TP.exactData.geometry.par_dim
 
     # Check basic run posterior sampling
-    samples = TP.UQ(Ns=50)
+    samples = TP.UQ(Ns=20)
 
     # Check that the output is the correct shape
-    assert samples.shape == (TP.model.domain_dim, 50)
+    assert samples.shape == (TP.model.domain_dim, 20)
 
     # Check basic MAP estimate
     MAP = TP.MAP()
@@ -28,7 +26,6 @@ def test_testproblem_simple():
     # Check that the output is the correct shape
     assert MAP.shape == (TP.model.domain_dim,)
 
-@pytest.mark.skipif(sys.platform == "linux", reason="Currently fails on miniconda linux image due to some issue with tigre!")
 @pytest.mark.parametrize("phantom",
     [
         (cuqi.data.shepp_logan(size=128)),
@@ -47,7 +44,6 @@ def test_testproblem_phantom(phantom):
 
     assert np.allclose(TP.exactSolution, cuqi.data.imresize(phantom, TP.model.domain_geometry.fun_shape))
 
-@pytest.mark.skipif(sys.platform == "linux", reason="Currently fails on miniconda linux image due to some issue with tigre!")
 def test_testproblem_set_prior():
     """ Test if one can set a prior after creating a testproblem """
     TP = cuqipy_cil.testproblem.ParallelBeam2DProblem(
@@ -70,7 +66,6 @@ def test_testproblem_set_prior():
     # Plot sample mean and ci
     samples.plot_ci()
 
-@pytest.mark.skipif(sys.platform == "linux", reason="Currently fails on miniconda linux image due to some issue with tigre!")
 def test_testproblem_from_readme():
 
     # Load a CT forward model and data from testproblem library
@@ -89,7 +84,7 @@ def test_testproblem_from_readme():
     BP = cuqi.problem.BayesianProblem(y, x).set_data(y=y_data)
 
     # Sample from the posterior
-    samples = BP.sample_posterior(200)
+    samples = BP.sample_posterior(20)
 
     # Analyze the samples
     info.exactSolution.plot(); plt.title("Exact solution")

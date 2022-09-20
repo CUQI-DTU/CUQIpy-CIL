@@ -1,12 +1,8 @@
 import numpy as np
 
-from cil.plugins.tigre import ProjectionOperator
+from cil.plugins.astra import ProjectionOperator
 from cil.framework import ImageGeometry, AcquisitionGeometry
 
-import pytest
-import sys
-
-@pytest.mark.skipif(sys.platform == "linux", reason="Currently fails on miniconda linux image due to some issue with tigre!")
 def test_only_CIL():
     im_size = (45,45)
     det_count = 50
