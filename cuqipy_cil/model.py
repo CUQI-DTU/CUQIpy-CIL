@@ -1,14 +1,15 @@
-from tkinter import E
 import numpy as np
 import cuqi
 import cuqipy_cil
 from cil.framework import ImageGeometry, AcquisitionGeometry, DataContainer
 
-# Try importing astra projector
+# Try importing astra projector (and check for CUDA)
 try:
     from cil.plugins.astra import ProjectionOperator as ProjectionOperatorAstra
+    import astra # To check for CUDA
 except ImportError:
     ProjectionOperatorAstra = None
+    astra = None
 
 # Try importing tigre projector
 try:
@@ -54,13 +55,28 @@ class CILModel(cuqi.model.LinearModel):
 
         # Create projection operator depending on the backend
         if cuqipy_cil.config.PROJECTION_BACKEND == "astra":
+
+            # If None module is not available
             if ProjectionOperatorAstra is None:
                 raise ImportError("Unable to load astra package needed by cil projector! Did you install cil with astra support?")
+
+            # If no CUDA available, switch to CPU
+            if not astra.use_cuda() and cuqipy_cil.config.PROJECTION_BACKEND_DEVICE == "gpu":
+                print("No CUDA support detected by astra, falling back to CPU projector!")
+                cuqipy_cil.config.PROJECTION_BACKEND_DEVICE = "cpu"
+
             self._ProjectionOperator = ProjectionOperatorAstra(image_geometry, acquisition_geometry, device=cuqipy_cil.config.PROJECTION_BACKEND_DEVICE)
         
         elif cuqipy_cil.config.PROJECTION_BACKEND == "tigre":
+            
+            # If None module is not available
             if ProjectionOperatorTigre is None:
                 raise ImportError("Unable to load tigre package needed by cil projector! Did you install cil with tigre support?")
+
+            # If CPU is requested throw error
+            if cuqipy_cil.config.PROJECTION_BACKEND_DEVICE == "cpu":
+                raise NotImplementedError("Tigre CPU projector not implemented yet! Try using astra backend instead.")
+
             self._ProjectionOperator = ProjectionOperatorTigre(image_geometry, acquisition_geometry) # no device option for tigre
         
         # Allocate data containers for efficiency
@@ -289,25 +305,3 @@ class ShiftedFanBeam2DModel(CILModel):
         )
 
         super().__init__(acquisition_geometry, image_geometry)
-
-
-# ======= RESOLVE BACKEND AND DEVICE ========
-def _test_forward():
-    model = ParallelBeam2DModel()
-    x = np.zeros(model.domain_geometry.par_dim)
-    y = model.forward(x)
-
-# Attempt a forward projection to check if modules and GPU are available
-try:
-    _test_forward()
-    print(f"Setting up CIL with backend={cuqipy_cil.config.PROJECTION_BACKEND} and device={cuqipy_cil.config.PROJECTION_BACKEND_DEVICE}")
-except Exception as e:
-    if cuqipy_cil.config.PROJECTION_BACKEND == "tigre":
-        cuqipy_cil.config.PROJECTION_BACKEND = "astra"
-    try:
-        _test_forward()
-        print(f"Setting up CIL with backend={cuqipy_cil.config.PROJECTION_BACKEND} and device={cuqipy_cil.config.PROJECTION_BACKEND_DEVICE}")
-    except Exception as e:
-        cuqipy_cil.config.PROJECTION_BACKEND_DEVICE = "cpu"
-        _test_forward()
-        print(f"Setting up CIL with backend={cuqipy_cil.config.PROJECTION_BACKEND} and device={cuqipy_cil.config.PROJECTION_BACKEND_DEVICE}")

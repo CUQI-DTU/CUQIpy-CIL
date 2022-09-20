@@ -1,6 +1,6 @@
 """ This module controls global configuration settings for cuqipy_cil. """
 
-PROJECTION_BACKEND = "tigre"
+PROJECTION_BACKEND = "astra"
 """ Projection backend to use. Currently supported: "tigre", "astra" """
 
 PROJECTION_BACKEND_DEVICE = "gpu"
