@@ -6,6 +6,8 @@ on:
       - main
   pull_request:
   workflow_dispatch:
+  repository_dispatch: # Triggered when CUQIpy updates via PyPI (runs only on main branch).
+    types: [run-tests-on-cuqipy-update]
 
 jobs:
   build-n-test:
@@ -32,6 +34,9 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
+      - name: Install pre-release of CUQIpy # We install latest pre-release version of CUQIpy to catch upstream bugs early
+        run: |
+          pip install cuqipy --pre --upgrade
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names

@@ -27,8 +27,8 @@ A, y_data, info = cuqipy_cil.testproblem.ParallelBeam2DProblem.get_components(
 )
 
 # Set up Bayesian model
-x = cuqi.distribution.GaussianCov(np.zeros(A.domain_dim), 1) # x ~ N(0, 1)
-y = cuqi.distribution.GaussianCov(A@x, 0.05**2)              # y ~ N(Ax, 0.05^2)
+x = cuqi.distribution.Gaussian(np.zeros(A.domain_dim), cov=1) # x ~ N(0, 1)
+y = cuqi.distribution.Gaussian(A@x, cov=0.05**2)              # y ~ N(Ax, 0.05^2)
 
 # Set up Bayesian Problem
 BP = cuqi.problem.BayesianProblem(y, x).set_data(y=y_data)

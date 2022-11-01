@@ -120,15 +120,15 @@ class ParallelBeam2DProblem(cuqi.problem.BayesianProblem):
 
         # Define prior
         if prior is None:
-            prior = cuqi.distribution.GaussianCov(np.zeros(model.domain_dim), 1, geometry = model.domain_geometry, name="x")
+            prior = cuqi.distribution.Gaussian(np.zeros(model.domain_dim), cov=1, geometry = model.domain_geometry, name="x")
 
         # Define and add noise #TODO: Add Poisson and logpoisson
         if noise_type.lower() == "gaussian":
-            data_dist = cuqi.distribution.GaussianCov(model(prior), noise_std**2, geometry = model.range_geometry, name="y")
+            data_dist = cuqi.distribution.Gaussian(model(prior), cov=noise_std**2, geometry = model.range_geometry, name="y")
         elif noise_type.lower() == "scaledgaussian":
             if data is None:
                 raise ValueError("Scaled Gaussian noise requires data to be defined.")
-            data_dist = cuqi.distribution.GaussianCov(model(prior), data*(noise_std**2), geometry = model.range_geometry, name="y")
+            data_dist = cuqi.distribution.Gaussian(model(prior), cov=data*(noise_std**2), geometry = model.range_geometry, name="y")
         else:
             raise NotImplementedError("This noise type is not implemented")
         

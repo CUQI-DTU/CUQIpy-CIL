@@ -41,8 +41,8 @@ model.adjoint(b_exact).plot()
 plt.colorbar()
 
 #%% Define Gaussian prior and data distribution
-prior      = cuqi.distribution.GaussianCov(np.zeros(n), 0.5, geometry=model.domain_geometry, name="x")
-data_dist  = cuqi.distribution.GaussianCov(model, 0.1, geometry=model.range_geometry, name="y")
+prior      = cuqi.distribution.Gaussian(np.zeros(n), cov=0.5, geometry=model.domain_geometry, name="x")
+data_dist  = cuqi.distribution.Gaussian(model, cov=0.1, geometry=model.range_geometry, name="y")
 
 #%% Generate noisy data using the data distribution from x_exact
 data=data_dist(x_exact).sample()
