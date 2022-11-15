@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest] # Add windows-latest, macos-latest to test on multiple OS
-        python-version: ["3.8", "3.9", "3.10"]
+        python-version: ["3.8", "3.9"]
     steps:
       - uses: conda-incubator/setup-miniconda@v2
         with:
