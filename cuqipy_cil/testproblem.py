@@ -43,7 +43,7 @@ class ParallelBeam2DProblem(cuqi.problem.BayesianProblem):
         Distribution of the prior.
         If set posterior samples can be computed using :meth:`sample_posterior`.
 
-    data : cuqi.samples.CUQIarray, optional
+    data : cuqi.array.CUQIarray, optional
         Data to be stored in testproblem.
 
     Attributes
@@ -116,7 +116,7 @@ class ParallelBeam2DProblem(cuqi.problem.BayesianProblem):
         else:
             raise ValueError("Phantom must be a string or ndarray. See string options in cuqi.data.")
         
-        x_exact = cuqi.samples.CUQIarray(x_exact, is_par=False, geometry=model.domain_geometry)
+        x_exact = cuqi.array.CUQIarray(x_exact, is_par=False, geometry=model.domain_geometry)
 
         # Define prior
         if prior is None:

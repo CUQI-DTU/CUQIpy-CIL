@@ -23,7 +23,7 @@ m   = model.range_geometry.par_dim  #p*q
 x_exact = cuqi.data.shepp_logan(size = N)
 
 # Phantom in cuqi array with geometry
-x_exact = cuqi.samples.CUQIarray(x_exact, is_par=False, geometry=model.domain_geometry)
+x_exact = cuqi.array.CUQIarray(x_exact, is_par=False, geometry=model.domain_geometry)
 
 # Plot phantom
 plt.figure()
