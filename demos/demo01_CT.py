@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 #Specifically load the CT library components
 from cuqipy_cil.model import ParallelBeam2DModel, FanBeam2DModel
-from cuqipy_cil.testproblem import ParallelBeam2DProblem
+from cuqipy_cil.testproblem import ParallelBeam2D
 
 #%% Define CT model conveniently with cuqi
 model = ParallelBeam2DModel() #CT model with parallel-beam and default values
@@ -74,7 +74,7 @@ samples.plot()
 plt.colorbar()
 
 #%% High level test problem
-BP = ParallelBeam2DProblem(prior=prior, noise_std=0.01, phantom="grains")
+BP = ParallelBeam2D(prior=prior, noise_std=0.01, phantom="grains")
 
 cuqi.config.MAX_DIM_INV = 1000 # Change max dim to a lower number such that the problem will be sampled using LinearRTO
 samples_BP = BP.sample_posterior(500)

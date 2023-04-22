@@ -1,10 +1,10 @@
 # %%
 import numpy as np
 from cuqi.distribution import Cauchy_diff
-from cuqipy_cil.testproblem import ParallelBeam2DProblem
+from cuqipy_cil.testproblem import ParallelBeam2D
 
 # Computed Tomography
-TP = ParallelBeam2DProblem(
+TP = ParallelBeam2D(
     im_size=(256, 256),
     det_count=256,
     angles=np.linspace(0, np.pi, 180),
