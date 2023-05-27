@@ -1,6 +1,6 @@
 # %%
 import numpy as np
-from cuqi.distribution import Cauchy_diff
+from cuqi.distribution import CMRF
 from cuqipy_cil.testproblem import ParallelBeam2D
 
 # Computed Tomography
@@ -12,7 +12,7 @@ TP = ParallelBeam2D(
 )
 
 # Cauchy difference prior
-TP.prior = Cauchy_diff(
+TP.prior = CMRF(
     location=np.zeros(TP.model.domain_dim),
     scale=0.01,
     physical_dim=2,
