@@ -55,9 +55,9 @@ def test_testproblem_set_prior():
 
     # Cauchy difference prior
     TP.prior = cuqi.distribution.CMRF(
-        location=np.zeros(TP.model.domain_dim),
+        location=0,
         scale=0.01,
-        physical_dim=2,
+        geometry=TP.model.domain_geometry,
     )
 
     # Sample posterior with automatic sampler choice

@@ -13,9 +13,9 @@ TP = ParallelBeam2D(
 
 # Cauchy difference prior
 TP.prior = CMRF(
-    location=np.zeros(TP.model.domain_dim),
+    location=0,
     scale=0.01,
-    physical_dim=2,
+    geometry=TP.model.domain_geometry
 )
 
 # Sample posterior with automatic sampler choice
