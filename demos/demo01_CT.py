@@ -57,7 +57,7 @@ likelihood = data_dist.to_likelihood(data)
 posterior = cuqi.distribution.Posterior(likelihood, prior)
 
 #%% Sample posterior
-sampler = cuqi.sampler.Linear_RTO(posterior)
+sampler = cuqi.sampler.LinearRTO(posterior)
 samples = sampler.sample(500,100)
 #%% Plot mean
 plt.figure()
