@@ -19,12 +19,12 @@ import cuqi
 import cuqipy_cil
 
 # Load a CT forward model and data from testproblem library
-A, y_data, info = cuqipy_cil.testproblem.ParallelBeam2D.get_components(
+A, y_data, info = cuqipy_cil.testproblem.ParallelBeam2D(
     im_size=(128, 128),
     det_count=128,
     angles=np.linspace(0, np.pi, 180),
     phantom="shepp-logan"
-)
+).get_components()
 
 # Set up Bayesian model
 x = cuqi.distribution.Gaussian(np.zeros(A.domain_dim), cov=1) # x ~ N(0, 1)
