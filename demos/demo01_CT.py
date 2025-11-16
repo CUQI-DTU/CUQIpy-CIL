@@ -29,6 +29,7 @@ x_exact = cuqi.array.CUQIarray(x_exact, is_par=False, geometry=model.domain_geom
 plt.figure()
 x_exact.plot()
 plt.colorbar()
+
 #%% Generate exact data and plot it
 b_exact = model.forward(x_exact)
 plt.figure()
@@ -42,7 +43,7 @@ plt.colorbar()
 
 #%% Define Gaussian prior and data distribution
 prior      = cuqi.distribution.Gaussian(np.zeros(n), cov=0.5, geometry=model.domain_geometry, name="x")
-data_dist  = cuqi.distribution.Gaussian(model, cov=0.1, geometry=model.range_geometry, name="y")
+data_dist  = cuqi.distribution.Gaussian(model, cov=0.01**2, geometry=model.range_geometry, name="y")
 
 #%% Generate noisy data using the data distribution from x_exact
 data=data_dist(x_exact).sample()
@@ -58,7 +59,10 @@ posterior = cuqi.distribution.Posterior(likelihood, prior)
 
 #%% Sample posterior
 sampler = cuqi.sampler.LinearRTO(posterior)
-samples = sampler.sample(500,100)
+sampler.warmup(100)
+sampler.sample(500)
+samples = sampler.get_samples().burnthin(100)
+
 #%% Plot mean
 plt.figure()
 samples.plot_mean()
@@ -74,7 +78,7 @@ samples.plot()
 plt.colorbar()
 
 #%% High level test problem
-BP = ParallelBeam2D(prior=prior, noise_std=0.01, phantom="grains")
+BP = ParallelBeam2D(prior=prior, noise_std=0.01)
 
 cuqi.config.MAX_DIM_INV = 1000 # Change max dim to a lower number such that the problem will be sampled using LinearRTO
 samples_BP = BP.sample_posterior(500)
@@ -87,4 +91,3 @@ plt.figure()
 samples_BP.plot_std()
 plt.colorbar()
 
-# %%
